@@ -1,10 +1,3 @@
-//
-//  PinnedReportView.swift
-//  CopWatchNYC
-//
-//  Created by Steve Roy on 4/1/23.
-//
-
 import SwiftUI
 
 

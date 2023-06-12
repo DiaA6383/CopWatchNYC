@@ -1,36 +1,28 @@
-//
-//  CreateReportView.swift
-//  CopWatchNYC
-//
-//  Created by Steve Roy on 4/1/23.
-//
-
 import SwiftUI
 import FirebaseAuth
 
 // The View for Creating Reports
 struct CreateReportView: View {
-    @State private var selectedIndex: Int = 0
-    @State private var secondCarouselIndex: Int = 0
-    @StateObject private var addressViewModel = AddressViewModel()
-    @StateObject private var pinningController = PinningController()
-    @Environment(\.presentationMode) var presentationMode
-    @EnvironmentObject var locationManager: LocationManager
-    @Binding var reportedLocations: [IdentifiablePin]
-    @Binding var selectedTab: String
-    
-    
-    let globalUserID = Auth.auth().currentUser?.uid
+    @State private var selectedIndex: Int = 0 // Index for the first carousel view
+    @State private var secondCarouselIndex: Int = 0 // Index for the second carousel view
+    @StateObject private var addressViewModel = AddressViewModel() // View model for handling the address text field
+    @StateObject private var pinningController = PinningController() // Controller for managing pinning functionality
+    @Environment(\.presentationMode) var presentationMode // Environment variable for dismissing the view
+    @EnvironmentObject var locationManager: LocationManager // Environment object for managing location updates
+    @Binding var reportedLocations: [IdentifiablePin] // Binding to the reported locations array
+    @Binding var selectedTab: String // Binding to the selected tab in the app
+
+    let globalUserID = Auth.auth().currentUser?.uid // Current user's ID
     
     // Arrays of the images for the two carousel views
     let firstCarouselImages = ["subway", "public", "bus"]
     let secondCarouselImages = ["fare", "heavy", "other"]
     
     private func storeReportLocation() async {
-        guard let userLocation = locationManager.location else { return }
-        let reportLocation = userLocation.coordinate
-        let (firstOptionText, secondOptionText) = selectedOptionText()
-        reportedLocations.append(IdentifiablePin(location: reportLocation, firstCarouselOption: firstOptionText, secondCarouselOption: secondOptionText))
+        guard let userLocation = locationManager.location else { return } // Get user's location
+        let reportLocation = userLocation.coordinate // Extract the coordinate
+        let (firstOptionText, secondOptionText) = selectedOptionText() // Get the selected options from the carousels
+        reportedLocations.append(IdentifiablePin(location: reportLocation, firstCarouselOption: firstOptionText, secondCarouselOption: secondOptionText)) // Add the report location to the array
         
         print("New report added: \(reportedLocations.last!)")
         
@@ -43,7 +35,7 @@ struct CreateReportView: View {
         pinningController.userID = Constants.testUserIDHosted
         
         do {
-            try await pinningController.addPin()
+            try await pinningController.addPin() // Add the pin using the pinning controller
         } catch {
             print("Error: \(error)")
         }
@@ -125,9 +117,8 @@ struct CreateReportView: View {
                 }, selectedTab: $selectedTab)
                 .padding(.top, 20)
             }
-            }
         }
-    
+    }
 }
 
 struct CarouselView: View {
@@ -165,7 +156,7 @@ struct PostButtonView: View {
             Task {
                 await action()
                 selectedTab = "home"
-        }
+            }
         }) {
             // Frontend of Post button
             Text("Post Your Report!")

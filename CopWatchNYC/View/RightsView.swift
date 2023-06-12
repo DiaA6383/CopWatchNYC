@@ -1,11 +1,3 @@
-//
-//  CreateReportView.swift
-//  CopWatchNYC
-//
-//  Created by Steve Roy on 4/28/23.
-//
-
-
 import SwiftUI
 
 struct RightsView: View {

@@ -1,10 +1,3 @@
-//
-//  AccountView.swift
-//  CopWatchNYC
-//
-//  Created by Steve Roy on 2/24/23.
-//
-
 import SwiftUI
 import Firebase
 import FirebaseAuth
@@ -20,9 +13,6 @@ struct AccountView: View {
     @State private var reportedLocations: [IdentifiablePin] = []
     @State private var isLoggedIn = false
 
-
-
-    
     var body: some View {
         NavigationView {
             VStack {
@@ -31,19 +21,18 @@ struct AccountView: View {
                     .aspectRatio(contentMode: .fit)
                     .frame(height: 150)
                     .padding(.top, 50)
-                
                     .onAppear {
                         // Update authentication status when the AccountView appears
                         if let user = Auth.auth().currentUser {
                             userEmail = user.email ?? "Not Signed In"
                         }
                     }
+                
                 Text("\(userEmail)") // Text for showing user's email
                     .font(.title)
                     .fontWeight(.bold)
                     .padding(.top, 20)
                     .foregroundColor(.white)
-                
                 
                 VStack(alignment: .center) {
                     Text("How many Posts do you have?") // Text asking how many posts
@@ -112,7 +101,6 @@ struct AccountView: View {
                     endPoint: .bottom
                 )
             )
-            
             .navigationBarTitle("Account")
             .sheet(isPresented: $showAuthView) {
                 LogInView(currentShowingView: $currentViewShowing, reportedLocations: $reportedLocations, isLoggedIn: $isLoggedIn)
@@ -123,29 +111,22 @@ struct AccountView: View {
                             if let user = Auth.auth().currentUser {
                                 userEmail = user.email ?? "Not Signed In"
                             }
-                            
-                        }
-                        else {
+                        } else {
                             showAuthView = true
                         }
                     }
             }
         }
-
-
-            .onAppear {
-                // Update authentication status when the AccountView appears
-                if let user = Auth.auth().currentUser {
-                    userEmail = user.email ?? "Not Signed In"
-                } else {
-                    userEmail = "Not Signed In"
-
-                }
+        .onAppear {
+            // Update authentication status when the AccountView appears
+            if let user = Auth.auth().currentUser {
+                userEmail = user.email ?? "Not Signed In"
+            } else {
+                userEmail = "Not Signed In"
             }
         }
     }
-
-
+}
 
 // Live preview for AccountView screen
 struct AccountView_Previews: PreviewProvider {

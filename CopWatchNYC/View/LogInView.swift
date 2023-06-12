@@ -1,10 +1,3 @@
-//
-//  Loginview.swift
-//  copwatch
-//
-//  Created by Ramy on 2/23/23.
-//
-
 import SwiftUI
 import FirebaseAuth
 import GoogleSignIn
@@ -25,16 +18,13 @@ struct LogInView: View {
     @State private var showSignUpView = false
     @State private var isSignedUp = false
     @State private var isShowingPasswordResetAlert = false
- 
-      
-
     
     var body: some View {
         NavigationStack(path: $path) {
-            ZStack{
+            ZStack {
                 Color("Color").edgesIgnoringSafeArea(.all)
-                VStack{
-                    HStack{
+                VStack {
+                    HStack {
                         Spacer(minLength: 0)
                         Image("Main Logo")
                             .resizable()
@@ -56,27 +46,22 @@ struct LogInView: View {
                             .foregroundColor(.white)
                             .colorScheme(.dark)
                         
-                        
                         Spacer()
                         
                         if(email.count != 0) {
-                            
                             Image(systemName: email.isValidEmail() ? "checkmark" : "xmark")
                                 .fontWeight(.bold)
                                 .foregroundColor(email.isValidEmail() ? .green : .red)
-                            
                         }
                     }
                     .foregroundColor(.white)
                     .padding()
-                    .overlay{
+                    .overlay {
                         RoundedRectangle(cornerRadius: 15)
                             .stroke(lineWidth: 2)
                             .foregroundColor(.white)
                     }
-                    
                     .padding()
-                    
                     
                     HStack {
                         Image(systemName: "lock")
@@ -98,6 +83,7 @@ struct LogInView: View {
                                 .fontWeight(.bold)
                                 .foregroundColor(password.isValidPassword(password) ? .green : .red)
                         }
+                        
                         Button(action: {
                             isPasswordVisible.toggle()
                         }) {
@@ -106,20 +92,15 @@ struct LogInView: View {
                                 .frame(width: 5, height: 10)
                                 .scaleEffect(1)
                                 .padding(9)
-                            
                         }
-                        
-                        
-                        
                     }
                     .foregroundColor(.white)
                     .padding()
-                    .overlay{
+                    .overlay {
                         RoundedRectangle(cornerRadius: 15)
                             .stroke(lineWidth: 2)
                             .foregroundColor(.white)
                     }
-                    
                     .padding()
                     
                     Button("Forgot Password?") {
@@ -138,55 +119,41 @@ struct LogInView: View {
                         }
                     }
                     .alert(isPresented: $isShowingPasswordResetAlert) {
-                         if email.isEmpty {
-                             return Alert(
-                                 title: Text("Email Required"),
-                                 message: Text("Please enter your email address to reset your password."),
-                                 dismissButton: .default(Text("OK"))
-                             )
-                         } else {
-                             return Alert(
-                                 title: Text("Email Sent"),
-                                 message: Text("Password Reset Email Sent."),
-                                 dismissButton: .default(Text("OK"))
-                             )
-                         }
-                     }
-                     
-                    
+                        if email.isEmpty {
+                            return Alert(
+                                title: Text("Email Required"),
+                                message: Text("Please enter your email address to reset your password."),
+                                dismissButton: .default(Text("OK"))
+                            )
+                        } else {
+                            return Alert(
+                                title: Text("Email Sent"),
+                                message: Text("Password Reset Email Sent."),
+                                dismissButton: .default(Text("OK"))
+                            )
+                        }
+                    }
                     .foregroundColor(.white.opacity(0.5))
                     .padding(.top, 5)
                     .padding(.horizontal, -72)
                     
-                    
                     HStack {
-                        
                         Button(action: {
                             withAnimation {
                                 showSignUpView = true
                             }
-                            
-                            
                         }) {
                             Text("Don't have an account?")
                                 .foregroundColor(.white.opacity(0.5))
                                 .padding(.horizontal, 55)
-                            
                         }
                         .padding(5)
-                        
-                  
-                        
                     }
-                    
-                    
-                    
                     
                     Spacer()
                     Spacer()
                     
                     Button(action: {
-                        
                         Auth.auth().signIn(withEmail: email, password: password) { authResult, error in
                             if let error = error {
                                 print(error.localizedDescription)
@@ -200,27 +167,20 @@ struct LogInView: View {
                                 } else {
                                     return
                                 }
-                                
                             }
-                            // if user is authorized change view to mapview
+                            
                             if let authResult = authResult {
                                 let user = authResult.user
                                 isLoggedIn = true
                                 
-                                
-                                
                                 if user.isEmailVerified {
                                     errorMessage = ""
                                     isLoggedIn = true
-                               
                                 } else {
                                     errorMessage = "The email is not verified"
                                 }
-                                
                             }
-                            
                         }
-                        
                     }, label: {
                         Text("Sign in")
                             .foregroundColor(.white)
@@ -228,34 +188,27 @@ struct LogInView: View {
                             .bold()
                             .frame(maxWidth: .infinity)
                             .padding()
-                        
                             .background(
                                 RoundedRectangle(cornerRadius: 100)
-                                    .fill(Color.black )
+                                    .fill(Color.black)
                             )
-                            .padding(.horizontal )
-                        
+                            .padding(.horizontal)
                     })
                     
                     Button(action: {
-                        
                         guard let clientID = FirebaseApp.app()?.options.clientID else { return }
                         
-                        // Create Google Sign In configuration object.
                         let config = GIDConfiguration(clientID: clientID)
                         GIDSignIn.sharedInstance.configuration = config
                         
-                        // Start the sign in flow!
                         GIDSignIn.sharedInstance.signIn(withPresenting: getRootViewController()) { result, error in
                             guard error == nil else {
-                                // ...
                                 return
                             }
                             
                             guard let user = result?.user,
                                   let idToken = user.idToken?.tokenString
                             else {
-                                // ...
                                 return
                             }
                             
@@ -265,13 +218,10 @@ struct LogInView: View {
                             Auth.auth().signIn(with: credential) { result, error in
                                 guard error == nil else {
                                     return
-                     
                                 }
                                 isLoggedIn = true
-                         
                             }
                         }
-                        
                     }) {
                         HStack {
                             Image("Google Logo")
@@ -285,14 +235,11 @@ struct LogInView: View {
                     .bold()
                     .frame(maxWidth: .infinity)
                     .padding()
-                    
                     .background(
                         RoundedRectangle(cornerRadius: 100)
-                            .fill(Color.black )
+                            .fill(Color.black)
                     )
-                    .padding(.horizontal )
-                    
-                    // sets path to mapview upon clicking
+                    .padding(.horizontal)
                     .navigationDestination(for: String.self) { view in
                         if view == "Home" {
                             Home(reportedLocations: $reportedLocations)
@@ -312,9 +259,7 @@ struct LogInView: View {
                             }
                         }
                 }
-        }
+            }
         }
     }
 }
-
-
