@@ -4,31 +4,31 @@ import GoogleSignIn
 import FirebaseCore
 import Firebase
 
-
 struct SignUpView: View {
-    @Binding var currentShowingView: String
-    @Binding var reportedLocations: [IdentifiablePin]
+    @Binding var currentShowingView: String // The currently displayed view
+    @Binding var reportedLocations: [IdentifiablePin] // Array of reported locations
     
-    @State private var path = NavigationPath()
-    @State private var email: String = ""
-    @State private var password: String = ""
-    @State private var confirmPassword: String = ""
-    @State private var errorMessage = ""
-    @State private var showError = false
-    @State private var showAlert = false
-    @State private var isPasswordVisible = false
-    @Binding var isSignedUp: Bool
-    @State private var isShowingEmailVerificationAlert = false
-    @StateObject private var userController = UserController()
+    @State private var path = NavigationPath() // Navigation path state
+    @State private var email: String = "" // User's email
+    @State private var password: String = "" // User's password
+    @State private var confirmPassword: String = "" // Confirm password
+    @State private var errorMessage = "" // Error message to display
+    @State private var showError = false // Flag to show error message
+    @State private var showAlert = false // Flag to show an alert
+    @State private var isPasswordVisible = false // Flag to toggle password visibility
+    @Binding var isSignedUp: Bool // Flag indicating if the user is signed up
+    @State private var isShowingEmailVerificationAlert = false // Flag to show email verification alert
+    @StateObject private var userController = UserController() // User controller object for managing users
     
     var passwordsMatch: Bool {
-        return password == confirmPassword
+        return password == confirmPassword // Check if the passwords match
     }
     
     func generateUsername(email: String) -> String {
+        // Generate a username based on the email
         
         guard !email.isEmpty else {
-            return "CopWatchNYCDefaultUserName"
+            return "CopWatchNYCDefaultUserName" // Default username if email is empty
         }
         
         var username = ""
@@ -42,10 +42,11 @@ struct SignUpView: View {
         }
         
         return username
-        
     }
     
     private func createUser() async {
+        // Create a user in the database
+        
         userController.userID = Auth.auth().currentUser?.uid ?? "User Not Found"
         userController.user_name = generateUsername(email: email)
         
@@ -55,14 +56,14 @@ struct SignUpView: View {
         } catch {
             print("Error: \(error)")
         }
-        
     }
     
     var body: some View {
         NavigationStack(path: $path) {
-            ZStack{
-                Color("Color 2").edgesIgnoringSafeArea(.all)
-                VStack{
+            ZStack {
+                Color("Color 2").edgesIgnoringSafeArea(.all) // Background color
+                
+                VStack {
                     HStack {
                         Spacer(minLength: 0)
                         Image("Main Logo")
@@ -79,16 +80,14 @@ struct SignUpView: View {
                     
                     HStack {
                         Image(systemName: "mail")
-                        TextField("Email", text: $email)
+                        TextField("Email", text: $email) // Email text field
                         
                         Spacer()
                         
                         if(email.count != 0) {
-                            
                             Image(systemName: email.isValidEmail() ? "checkmark" : "xmark")
                                 .fontWeight(.bold)
                                 .foregroundColor(email.isValidEmail() ? .green : .red)
-                            
                         }
                     }
                     .padding(.top, -20)
@@ -100,7 +99,6 @@ struct SignUpView: View {
                             .foregroundColor(.white)
                             .padding(.top, -20)
                     }
-                    
                     .padding()
                     
                     VStack {
@@ -108,9 +106,9 @@ struct SignUpView: View {
                             Image(systemName: "lock")
                             
                             if isPasswordVisible {
-                                TextField("Password", text: $password)
+                                TextField("Password", text: $password) // Password text field
                             } else {
-                                SecureField("Password", text: $password)
+                                SecureField("Password", text: $password) // Secure password text field
                             }
                             
                             Spacer()
@@ -133,13 +131,12 @@ struct SignUpView: View {
                         .padding()
                         
                         HStack {
-                            
                             Image(systemName: "lock")
                             
                             if isPasswordVisible {
-                                TextField("Confirm Password", text: $confirmPassword)
+                                TextField("Confirm Password", text: $confirmPassword) // Confirm password text field
                             } else {
-                                SecureField("Confirm Password", text: $confirmPassword)
+                                SecureField("Confirm Password", text: $confirmPassword) // Secure confirm password text field
                             }
                             
                             Spacer()
@@ -161,16 +158,16 @@ struct SignUpView: View {
                                 .padding(.top, -20)
                         }
                         .padding()
+                        
                         Text("(Password must contain 6 characters, an uppercase, and symbol)")
                             .foregroundColor(.gray)
                             .font(.caption)
                     }
                     
                     HStack {
-                        
                         Button(action: {
                             withAnimation {
-                                self.currentShowingView = "login"
+                                self.currentShowingView = "login" // Navigate to the login view
                                 isSignedUp = true
                             }
                         }) {
@@ -181,39 +178,28 @@ struct SignUpView: View {
                         }
                         
                         Button(action: {
-                            isPasswordVisible.toggle()
+                            isPasswordVisible.toggle() // Toggle password visibility
                         }) {
                             Image(systemName: isPasswordVisible ? "eye.slash" : "eye")
                                 .foregroundColor(.gray)
                                 .scaleEffect(1.5)
                                 .padding(.horizontal, -10)
                                 .contentShape(Rectangle())
-                            
                         }
-                        
                     }
-                    
-                    
                     
                     Spacer()
                     Spacer()
                     
                     Button {
-                        if password == confirmPassword {
-                          
+                        if password == confirmPassword { // Check if passwords match
                             Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
                                 if let error = error {
                                     print(error.localizedDescription)
                                     if (error.localizedDescription == "The email address is already in use by another account.") {
-                                        
                                         errorMessage = "This email is already in use!"
-                                        
                                     } else {
-                                        
-                                        //create User in db with firebase UID
-                                        
-                                        
-                                        
+                                        // Create user in the database with Firebase UID
                                         return
                                     }
                                 }
@@ -225,13 +211,9 @@ struct SignUpView: View {
                                         isSignedUp = true
                                     }
                                 }
-                                
                             }
-                            
-                            
                         } else {
-                            // Display an error message
-                            showAlert = true
+                            showAlert = true // Display an error message
                         }
                     } label: {
                         Text("Register your Account ")
@@ -246,6 +228,7 @@ struct SignUpView: View {
                             )
                             .padding(.horizontal )
                     }
+                    
                     Button(action: {
                         isSignedUp = true
                         
@@ -274,18 +257,14 @@ struct SignUpView: View {
                             
                             Auth.auth().signIn(with: credential) { result, error in
                                 guard error == nil else {
-                                    
-                                    //create User in db with firebase UID
-                                    
+                                    // Create user in the database with Firebase UID
                                     return
                                 }
                                 
                                 isSignedUp = true
                                 print("Signed In")
-                                
                             }
                         }
-                        
                     }) {
                         HStack {
                             Image("Google Logo")
@@ -299,21 +278,16 @@ struct SignUpView: View {
                     .bold()
                     .frame(maxWidth: .infinity)
                     .padding()
-                    
                     .background(
                         RoundedRectangle(cornerRadius: 100)
-                            .fill(Color.black )
+                            .fill(Color.black)
                     )
                     .padding(.horizontal)
-                    
                     .navigationDestination(for: String.self) { view in
                         if view == "NavBarView" {
-                            Home(reportedLocations: $reportedLocations)
+                            Home(reportedLocations: $reportedLocations) // Navigate to the home view
                         }
                     }
-                    
-                    
-                    
                 }
                 
                 // Display an alert if passwords do not match
@@ -324,18 +298,18 @@ struct SignUpView: View {
                         dismissButton: .default(Text("OK"))
                     )
                 }
+                
+                // Display an alert for email verification
                 .alert(isPresented: $isShowingEmailVerificationAlert) {
                     Alert(
                         title: Text("Email Verification Sent"),
                         message: Text("A verification email has been sent to your email address. Please check your inbox and follow the instructions to verify your email address."),
                         dismissButton: .default(Text("OK")) {
-                            currentShowingView = "login"
+                            currentShowingView = "login" // Navigate to the login view
                         }
                     )
                 }
-
             }
         }
     }
 }
-
